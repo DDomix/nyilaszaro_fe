@@ -30,7 +30,7 @@ class App extends Component<{}, State> {
   }
 
 
-  async Tarhelybetoltes() {
+  async Ablakbetoltes() {
     let response = await fetch('http://localhost:3000/ablak');
     let data = await response.json() as Ablak[];
     this.setState({
@@ -39,9 +39,14 @@ class App extends Component<{}, State> {
   }
 
   componentDidMount() {
-    this.Tarhelybetoltes();
+    this.Ablakbetoltes();
   }
-  
+  async DeleteAblak(id:number){
+    await fetch('http://localhost:3000/ablak/'+ id, {
+      method: 'DELETE',
+    })
+    await this.Ablakbetoltes();
+  }
 
   Felvetelkezeles = async () => {
     const { ujTipus, ujVastagsag, ujMeret} = this.state;
@@ -69,7 +74,7 @@ class App extends Component<{}, State> {
       ujMeret: 0,
     })
 
-    await this.Tarhelybetoltes();
+    await this.Ablakbetoltes();
 
   }
 
@@ -79,14 +84,15 @@ class App extends Component<{}, State> {
 
     return <div>
       <h2>Új Ablak hozzáadása</h2>
+      <div className="lacika">
       Típus: <input type='text' value={ujTipus} onChange={e => this.setState({ujTipus: e.currentTarget.value})}></input><br/>
       Vastagság: <input type='number' value={ujVastagsag} onChange={e => this.setState({ ujVastagsag: parseInt(e.currentTarget.value)})}></input> mm<br/>
-      Méret: <input type='number' value={ujMeret} onChange={e => this.setState({ ujMeret: parseInt(e.currentTarget.value)})}></input> cm^2<br/>
+      Méret: <input type='number' value={ujMeret} onChange={e => this.setState({ ujMeret: parseInt(e.currentTarget.value)})}></input> cm^2<br/></div>
       <button onClick={this.Felvetelkezeles}>Felvétel</button>
       <h2>Ablakok</h2>
       <ul>
         {
-          this.state.ablakok.map((ablak) => <li>{ablak.tipus} | {ablak.vastagsag} mm | {ablak.meret} cm^2 </li>)
+          this.state.ablakok.map((ablak) => <table><tr><td>{ablak.tipus} | {ablak.vastagsag} mm | {ablak.meret} cm^2 <button onClick= {() => this.DeleteAblak(ablak.id)}>Törlés</button></td></tr></table>)
         }
       </ul>
     </div>
